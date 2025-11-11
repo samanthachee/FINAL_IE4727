@@ -37,7 +37,7 @@ if (empty($_SESSION['user_id'])) {
         </nav>
       );
     }
-
+    //first image on web, can click and redirect to catalogue
     function ProductCard({ product, label }) {
       const [isHovered, setIsHovered] = useState(false);
 
@@ -62,7 +62,7 @@ if (empty($_SESSION['user_id'])) {
         </div>
       );
     }
-
+    //promotional image
     function PromoSection() {
       const [currentPromo, setCurrentPromo] = useState(0);
       const promos = [

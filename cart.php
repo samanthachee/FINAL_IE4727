@@ -318,7 +318,7 @@ exit;
       }
     }
 
-    // On page load, try DB cart first; fallback is zero or your JS cart
+    //On page load, try DB cart first; fallback is zero or your JS cart
     document.addEventListener('DOMContentLoaded', loadSavedCart);
   </script>
 </body>

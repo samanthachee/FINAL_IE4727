@@ -49,6 +49,7 @@ $price = $_GET['price'] ?? '';
   <footer><i>💕 Pretty. Playful. Perfectly you</i><br>Let's Chat 💌<br>Email: <a href="mailto:hello@lauretha.com">hello@lauretha.com</a><br><small>© 2025 LaureTha. All rights reserved</small></footer>
 
   <script>
+    //shows items in cart
     function loadOrderItems() {
       try {
         const orderData = sessionStorage.getItem('orderData');
@@ -88,7 +89,7 @@ $price = $_GET['price'] ?? '';
         console.warn('Failed to load order items:', e);
       }
     }
-    
+    //shows product images
     function getProductImage(productName) {
       const imageMap = {
         'Elegant Blouse': 'elegant_blouse.png',

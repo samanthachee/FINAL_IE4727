@@ -1,16 +1,7 @@
--- ========================================
--- COMPLETE DATABASE SETUP FOR LAURETHA FASHION STORE
--- ========================================
--- This file contains all database tables and initial data needed for the fashion store
--- Run this once to set up your entire database from scratch
-
 -- Create database
 CREATE DATABASE IF NOT EXISTS final_project;
 USE final_project;
 
--- ========================================
--- USER MANAGEMENT TABLES
--- ========================================
 -- Users table for registration/login system
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,9 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ========================================
--- SHOPPING CART TABLES
--- ========================================
 -- Cart items table for logged-in users (temporary storage before purchase)
 CREATE TABLE IF NOT EXISTS cart_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,9 +24,6 @@ CREATE TABLE IF NOT EXISTS cart_items (
     INDEX idx_user_product (user_id, product_name)
 );
 
--- ========================================
--- INVENTORY MANAGEMENT TABLES
--- ========================================
 -- Inventory table for stock management (tracks available quantities)
 CREATE TABLE IF NOT EXISTS inventory (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,9 +33,6 @@ CREATE TABLE IF NOT EXISTS inventory (
     UNIQUE KEY unique_product_size (product_name, size)
 );
 
--- ========================================
--- ORDER MANAGEMENT TABLES
--- ========================================
 -- Orders table to store completed purchases (order summary)
 CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -75,9 +57,6 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 
--- ========================================
--- INITIAL DATA SETUP
--- ========================================
 -- Insert initial inventory data (2 of each size for each clothing item)
 INSERT INTO inventory (product_name, size, stock_quantity) VALUES
 -- Elegant Blouse inventory
@@ -89,14 +68,3 @@ INSERT INTO inventory (product_name, size, stock_quantity) VALUES
 -- Summer Shorts inventory
 ('Summer Shorts', 'XS', 2), ('Summer Shorts', 'S', 2), ('Summer Shorts', 'M', 2), ('Summer Shorts', 'L', 2), ('Summer Shorts', 'XL', 2)
 ON DUPLICATE KEY UPDATE stock_quantity = VALUES(stock_quantity);
-
--- ========================================
--- SETUP COMPLETE
--- ========================================
--- Your LaureTha Fashion Store database is now ready!
--- Tables created:
--- - users: Customer accounts
--- - cart_items: Shopping cart (temporary)
--- - inventory: Stock levels by product and size
--- - orders: Completed purchase records
--- - order_items: Individual items in each order

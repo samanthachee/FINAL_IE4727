@@ -24,7 +24,7 @@
       });
       const [errors, setErrors] = useState({});
       const [isSubmitting, setIsSubmitting] = useState(false);
-
+      //constraints for form validation
       const validateName = (name) => {
         if (!name.trim()) return 'Name is required';
         if (!/^[a-zA-Z\s]+$/.test(name.trim())) return 'Name can only contain letters and spaces';
@@ -63,7 +63,7 @@
       const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         
-        // Real-time validation
+        //Real-time validation
         const newErrors = { ...errors };
         
         if (field === 'name') {
@@ -83,7 +83,7 @@
           if (passwordError) newErrors.password = passwordError;
           else delete newErrors.password;
           
-          // Re-validate confirm password
+          //Re-validate confirm password
           if (formData.confirmPassword) {
             const confirmError = validateConfirm(value, formData.confirmPassword);
             if (confirmError) newErrors.confirmPassword = confirmError;

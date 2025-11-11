@@ -73,7 +73,7 @@ if (empty($_SESSION['user_id'])) {
         </tr>
       );
     }
-
+    //payment and shipping form
     function CheckoutForm({ total, onSubmit }) {
       const [formData, setFormData] = useState({
         name: '',
@@ -84,59 +84,50 @@ if (empty($_SESSION['user_id'])) {
       const [errors, setErrors] = useState({});
       const [isSubmitting, setIsSubmitting] = useState(false);
 
+      // Shared validation function
+      const validateField = (field, value) => {
+        switch (field) {
+          case 'name':
+            if (!value.trim()) return 'Name is required';
+            if (!/^[a-zA-Z\s]+$/.test(value.trim())) return 'Name can only contain letters and spaces';
+            if (value.trim().length < 2) return 'Name must be at least 2 characters long';
+            return null;
+            
+          case 'email':
+            if (!value.trim()) return 'Email is required';
+            if (!/^[\w\.-]+@[\w\.-]+$/.test(value)) return 'Please enter a valid email address';
+            
+            const domain = value.split('@')[1];
+            if (!domain) return 'Please enter a valid email address';
+            
+            const parts = domain.split('.');
+            if (parts.length < 2 || parts.length > 4) return 'Domain must have 2-4 parts';
+            
+            const tld = parts[parts.length - 1].toLowerCase();
+            if (tld !== 'sg' && tld !== 'com') return 'Email must end with .sg or .com';
+            return null;
+            
+          case 'address':
+            if (!value.trim()) return 'Address is required';
+            if (value.trim().length < 10) return 'Please enter a complete address (at least 10 characters)';
+            if (!/[a-zA-Z]/.test(value) || !/[0-9]/.test(value)) return 'Address must contain both letters and numbers';
+            return null;
+            
+          default:
+            return null;
+        }
+      };
+
       const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         
-        // Real-time validation
         const newErrors = { ...errors };
+        const error = validateField(field, value);
         
-        if (field === 'name') {
-          if (!value.trim()) {
-            newErrors.name = 'Name is required';
-          } else if (!/^[a-zA-Z\s]+$/.test(value.trim())) {
-            newErrors.name = 'Name can only contain letters and spaces';
-          } else if (value.trim().length < 2) {
-            newErrors.name = 'Name must be at least 2 characters long';
-          } else {
-            delete newErrors.name;
-          }
-        }
-        
-        if (field === 'email') {
-          if (!value.trim()) {
-            newErrors.email = 'Email is required';
-          } else if (!/^[\w\.-]+@[\w\.-]+$/.test(value)) {
-            newErrors.email = 'Please enter a valid email address';
-          } else {
-            const domain = value.split('@')[1];
-            if (domain) {
-              const parts = domain.split('.');
-              if (parts.length < 2 || parts.length > 4) {
-                newErrors.email = 'Domain must have 2-4 parts';
-              } else {
-                const tld = parts[parts.length - 1].toLowerCase();
-                if (tld !== 'sg' && tld !== 'com') {
-                  newErrors.email = 'Email must end with .sg or .com';
-                } else {
-                  delete newErrors.email;
-                }
-              }
-            } else {
-              newErrors.email = 'Please enter a valid email address';
-            }
-          }
-        }
-        
-        if (field === 'address') {
-          if (!value.trim()) {
-            newErrors.address = 'Address is required';
-          } else if (value.trim().length < 10) {
-            newErrors.address = 'Please enter a complete address (at least 10 characters)';
-          } else if (!/[a-zA-Z]/.test(value) || !/[0-9]/.test(value)) {
-            newErrors.address = 'Address must contain both letters and numbers';
-          } else {
-            delete newErrors.address;
-          }
+        if (error) {
+          newErrors[field] = error;
+        } else {
+          delete newErrors[field];
         }
         
         setErrors(newErrors);
@@ -145,45 +136,10 @@ if (empty($_SESSION['user_id'])) {
       const validateForm = () => {
         const newErrors = {};
         
-        // Name validation
-        if (!formData.name.trim()) {
-          newErrors.name = 'Name is required';
-        } else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
-          newErrors.name = 'Name can only contain letters and spaces';
-        } else if (formData.name.trim().length < 2) {
-          newErrors.name = 'Name must be at least 2 characters long';
-        }
-        
-        // Email validation
-        if (!formData.email.trim()) {
-          newErrors.email = 'Email is required';
-        } else if (!/^[\w\.-]+@[\w\.-]+$/.test(formData.email)) {
-          newErrors.email = 'Please enter a valid email address';
-        } else {
-          const domain = formData.email.split('@')[1];
-          if (domain) {
-            const parts = domain.split('.');
-            if (parts.length < 2 || parts.length > 4) {
-              newErrors.email = 'Domain must have 2-4 parts';
-            } else {
-              const tld = parts[parts.length - 1].toLowerCase();
-              if (tld !== 'sg' && tld !== 'com') {
-                newErrors.email = 'Email must end with .sg or .com';
-              }
-            }
-          } else {
-            newErrors.email = 'Please enter a valid email address';
-          }
-        }
-        
-        // Address validation
-        if (!formData.address.trim()) {
-          newErrors.address = 'Address is required';
-        } else if (formData.address.trim().length < 10) {
-          newErrors.address = 'Please enter a complete address (at least 10 characters)';
-        } else if (!/[a-zA-Z]/.test(formData.address) || !/[0-9]/.test(formData.address)) {
-          newErrors.address = 'Address must contain both letters and numbers';
-        }
+        ['name', 'email', 'address'].forEach(field => {
+          const error = validateField(field, formData[field]);
+          if (error) newErrors[field] = error;
+        });
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -303,18 +259,23 @@ if (empty($_SESSION['user_id'])) {
               </select>
             </div>
             
-            <button 
-              className="btn" 
-              type="submit"
-              disabled={isSubmitting || Object.keys(errors).length > 0 || !formData.name || !formData.email || !formData.address}
-              style={{
-                opacity: (isSubmitting || Object.keys(errors).length > 0 || !formData.name || !formData.email || !formData.address) ? 0.6 : 1,
-                cursor: (isSubmitting || Object.keys(errors).length > 0 || !formData.name || !formData.email || !formData.address) ? 'not-allowed' : 'pointer',
-                backgroundColor: (isSubmitting || Object.keys(errors).length > 0 || !formData.name || !formData.email || !formData.address) ? '#ccc' : ''
-              }}
-            >
-              {isSubmitting ? 'Processing Order...' : 'Submit Order'}
-            </button>
+            {(() => {
+              const isDisabled = isSubmitting || Object.keys(errors).length > 0 || !formData.name || !formData.email || !formData.address;
+              return (
+                <button 
+                  className="btn" 
+                  type="submit"
+                  disabled={isDisabled}
+                  style={{
+                    opacity: isDisabled ? 0.6 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    backgroundColor: isDisabled ? '#ccc' : ''
+                  }}
+                >
+                  {isSubmitting ? 'Processing Order...' : 'Submit Order'}
+                </button>
+              );
+            })()}
             
             {Object.keys(errors).length > 0 && (
               <div style={{
@@ -365,18 +326,15 @@ if (empty($_SESSION['user_id'])) {
           formData.append('qty', qty);
           
           const response = await fetch('update_cart.php', { method: 'POST', body: formData });
-          const result = await response.text();
           
-          if (response.ok) {
-            loadCart();
-          } else {
+          if (!response.ok) {
+            const result = await response.text();
             alert(result);
-            loadCart();
           }
         } catch (error) {
           alert('Failed to update item');
-          loadCart();
         }
+        loadCart();
       };
 
       const deleteItem = async (itemId) => {
@@ -410,7 +368,7 @@ if (empty($_SESSION['user_id'])) {
 
       const submitOrder = async (orderData) => {
         try {
-          // Store cart data for confirmation page
+          //Store cart data for confirmation page
           const orderSummary = {
             items: cartItems.map(item => ({
               ...item,
@@ -442,7 +400,7 @@ if (empty($_SESSION['user_id'])) {
           alert('Failed to complete order');
         }
       };
-      
+      //for order images to show in order confirmation page
       const getProductImage = (productName) => {
         const imageMap = {
           'Elegant Blouse': 'elegant_blouse.png',

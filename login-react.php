@@ -18,6 +18,7 @@ if (!empty($_SESSION['user_id'])) { header('Location: index-react.php'); exit; }
   <script type="text/babel">
     const { useState } = React;
 
+    //constraints for login form
     function LoginForm() {
       const [formData, setFormData] = useState({ email: '', password: '' });
       const [errors, setErrors] = useState({});
@@ -48,7 +49,7 @@ if (!empty($_SESSION['user_id'])) { header('Location: index-react.php'); exit; }
       const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         
-        // Real-time validation
+        //Real-time validation
         const newErrors = { ...errors };
         if (field === 'email') {
           const emailError = validateEmail(value);
@@ -73,7 +74,7 @@ if (!empty($_SESSION['user_id'])) { header('Location: index-react.php'); exit; }
           return;
         }
         
-        // Let the form submit normally to PHP if validation passes
+        //Let the form submit normally to PHP if validation passes
         setIsSubmitting(true);
       };
 

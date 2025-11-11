@@ -11,7 +11,6 @@ if (empty($_SESSION['user_id'])) {
   <meta charset="UTF-8">
   <title>Catalogue - React Version</title>
   <link rel="stylesheet" href="style.css">
-  <!-- React CDN -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -35,14 +34,14 @@ if (empty($_SESSION['user_id'])) {
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Product data
+    //Product data
     const products = [
       { id: 1, name: 'Elegant Blouse', price: 45, image: 'elegant_blouse.png', category: 'tops' },
       { id: 2, name: 'Casual T-Shirt', price: 25, image: 'casual_tshirt.png', category: 'tops' },
       { id: 3, name: 'Designer Jeans', price: 80, image: 'designer_jeans.png', category: 'bottoms' },
       { id: 4, name: 'Summer Shorts', price: 35, image: 'summer_shorts.png', category: 'bottoms' }
     ];
-
+    //default look on the website
     function ProductCard({ product }) {
       const [selectedSize, setSelectedSize] = useState('M');
       const [quantity, setQuantity] = useState(1);
